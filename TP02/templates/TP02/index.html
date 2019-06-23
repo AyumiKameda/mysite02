@@ -1,0 +1,40 @@
+{% extends 'TP02/base.html' %}
+
+{% block content %}
+<div class="col-lg-6 offset-lg-3">
+     <h1>検索条件</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in test_form %}
+            <div class="form-group form-inline">
+                <label class="col-md-offset-2 col-md-3 control-label">{{ field.label }}:</label>
+                <div class="col-md-8">
+                    {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+        <input class="btn btn-success offset-md-8 col-md-3" type="submit" id="button" name="button" value="検索">
+    </form>
+    <hr>
+    <h1>検索結果</h1>
+    <section class="post-list">
+        {% if goods_list|length == 0 %}
+            <p>検索結果が存在しません。</p>
+        {% else %}
+            <table class="table table-hover table-bordered">
+                <tr>
+                    <th>タイトル</th>
+                    <th>価格</th>
+                </tr>
+                <tbody>
+                {% for goods in goods_list %}
+                    <tr>
+                        <td width="35%">{{ goods.title }}</td>
+                        <td width="65%">{{ goods.price }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+{% endblock %}

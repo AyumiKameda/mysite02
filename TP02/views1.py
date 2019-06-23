@@ -10,15 +10,12 @@ from .forms import GoodsSearchForm
 from django.db.models import Q
 
 
+class IndexView(generic.ListView):
 
+    paginate_by = 5
+    template_name = 'TP02/index.html'
+    model = Goods
 
-logger = logging.getLogger(__name__)
-
-
-class IndexView(View):
-
-    # この行で変数名を指定
-    context_object_name = "goods_list"
     #def post()でセッションに検索フォームの値を渡す。
     def post(self, request, *args, **kwargs):
 
@@ -34,7 +31,26 @@ class IndexView(View):
 
         return self.get(request, *args, **kwargs)
 
+    #def get_context_data()でセッションから検索フォームの値を取得して、検索フォームの初期値としてセットする。
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
+        # sessionに値がある場合、その値をセットする。（ページングしてもform値が変わらないように）
+        title = ''
+        price = ''
+        if 'form_value' in self.request.session:
+            form_value = self.request.session['form_value']
+            title = form_value[0]
+            price = form_value[1]
+
+        default_data = {'title': title,  # タイトル
+                        'price': price,  # 内容
+                        }
+
+        test_form = GoodsSearchForm(initial=default_data) # 検索フォーム
+        context['test_form'] = test_form
+
+        return context
 
     #def get_queryset()でセッションから取得した検索フォームの値に応じてクエリ発行を行う。
     def get_queryset(self):
